@@ -1,0 +1,62 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    display: flex;
+    justify-content: center;
+    padding-top: 80px;
+}
+
+.container {
+    width: 400px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 30px;
+}
+
+.drop-area {
+    border: 2px dashed #0066ff;
+    padding: 30px;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+}
+
+.drop-area.dragover {
+    background: #e6f0ff;
+}
+
+input[type="file"] {
+    margin-top: 10px;
+}
+
+.input-section {
+    margin-top: 20px;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+.btn {
+    margin-top: 20px;
+    background: #0066ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #004ecc;
+}
+
+#status {
+    margin-top: 20px;
+    font-weight: bold;
+}

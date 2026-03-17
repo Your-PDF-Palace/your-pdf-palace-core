@@ -6,6 +6,10 @@ let splitFile = null
 let selectedPages = []
 let splitBlob = null
 
+let pdfDoc = null
+let currentPage = 0
+const RENDER_BATCH = 20
+
 splitUpload.onclick = () => splitInput.click()
 
 splitInput.addEventListener("change", async e => {
@@ -28,11 +32,66 @@ renderSplitPreview()
 })
 
 async function renderSplitPreview(){
+async function renderSplitPreview(){
 
-pageGrid.innerHTML = ""
-selectedPages = []
+pageGrid.innerHTML=""
+selectedPages=[]
 
 const buffer = await splitFile.arrayBuffer()
+
+pdfDoc = await pdfjsLib.getDocument({data:buffer}).promise
+
+currentPage = 0
+
+renderNextBatch()
+
+}
+async function renderNextBatch(){
+
+let end = Math.min(currentPage + RENDER_BATCH, pdfDoc.numPages)
+
+for(let i=currentPage + 1; i<=end; i++){
+
+const page = await pdfDoc.getPage(i)
+
+const viewport = page.getViewport({scale:0.5})
+
+const canvas = document.createElement("canvas")
+
+canvas.width = viewport.width
+canvas.height = viewport.height
+
+const ctx = canvas.getContext("2d")
+
+await page.render({
+canvasContext: ctx,
+viewport
+}).promise
+
+const div = document.createElement("div")
+div.className = "page"
+
+div.appendChild(canvas)
+
+div.onclick = ()=>{
+
+div.classList.toggle("selected")
+
+if(selectedPages.includes(i)){
+selectedPages = selectedPages.filter(p=>p!==i)
+}else{
+selectedPages.push(i)
+}
+
+}
+
+pageGrid.appendChild(div)
+
+}
+
+currentPage = end
+
+}
 const pdf = await pdfjsLib.getDocument({data:buffer}).promise
 
 for(let i=1;i<=pdf.numPages;i++){
@@ -121,3 +180,14 @@ a.click()
 URL.revokeObjectURL(url)
 
 }
+pageGrid.addEventListener("scroll",()=>{
+
+if(pageGrid.scrollTop + pageGrid.clientHeight >= pageGrid.scrollHeight - 200){
+
+if(currentPage < pdfDoc.numPages){
+renderNextBatch()
+}
+
+}
+
+})

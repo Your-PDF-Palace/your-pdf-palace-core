@@ -1,57 +1,71 @@
-const uploadZone=document.getElementById("uploadZone")
-const fileInput=document.getElementById("fileInput")
-const pageGrid=document.getElementById("pageGrid")
+const deleteUpload = document.getElementById("deleteUpload")
+const deleteInput = document.getElementById("deleteInput")
+const deleteGrid = document.getElementById("deleteGrid")
 
-let file=null
-let pagesToDelete=[]
-let cleanBlob=null
+let deleteFile = null
+let pagesToDelete = []
+let deleteBlob = null
 
-uploadZone.onclick=()=>fileInput.click()
+deleteUpload.onclick = () => deleteInput.click()
 
-fileInput.addEventListener("change",async e=>{
-file=e.target.files[0]
-renderPreview()
+deleteInput.addEventListener("change", async e => {
+
+deleteFile = e.target.files[0]
+
+if(!deleteFile){
+return
+}
+
+renderDeletePreview()
+
 })
 
-async function renderPreview(){
+async function renderDeletePreview(){
 
-pageGrid.innerHTML=""
-pagesToDelete=[]
+deleteGrid.innerHTML = ""
+pagesToDelete = []
 
-const buffer=await file.arrayBuffer()
-const pdf=await pdfjsLib.getDocument({data:buffer}).promise
+const buffer = await deleteFile.arrayBuffer()
+
+const pdf = await pdfjsLib.getDocument({data:buffer}).promise
 
 for(let i=1;i<=pdf.numPages;i++){
 
-const page=await pdf.getPage(i)
-const viewport=page.getViewport({scale:0.5})
+const page = await pdf.getPage(i)
 
-const canvas=document.createElement("canvas")
-canvas.width=viewport.width
-canvas.height=viewport.height
+const viewport = page.getViewport({scale:0.5})
 
-const ctx=canvas.getContext("2d")
+const canvas = document.createElement("canvas")
 
-await page.render({canvasContext:ctx,viewport}).promise
+canvas.width = viewport.width
+canvas.height = viewport.height
 
-const div=document.createElement("div")
-div.className="page"
+const ctx = canvas.getContext("2d")
+
+await page.render({
+canvasContext:ctx,
+viewport
+}).promise
+
+const div = document.createElement("div")
+
+div.className = "page"
 
 div.appendChild(canvas)
 
-div.onclick=()=>{
+div.onclick = () => {
 
 div.classList.toggle("delete")
 
 if(pagesToDelete.includes(i)){
-pagesToDelete=pagesToDelete.filter(p=>p!==i)
+pagesToDelete = pagesToDelete.filter(p => p !== i)
 }else{
 pagesToDelete.push(i)
 }
 
 }
 
-pageGrid.appendChild(div)
+deleteGrid.appendChild(div)
 
 }
 
@@ -59,33 +73,47 @@ pageGrid.appendChild(div)
 
 async function deletePages(){
 
-const {PDFDocument}=PDFLib
+const {PDFDocument} = PDFLib
 
-const srcBytes=await file.arrayBuffer()
-const srcPdf=await PDFDocument.load(srcBytes)
+const srcBytes = await deleteFile.arrayBuffer()
 
-const newPdf=await PDFDocument.create()
+const srcPdf = await PDFDocument.load(srcBytes)
 
-const keep=[]
+const newPdf = await PDFDocument.create()
+
+const keepPages = []
 
 for(let i=0;i<srcPdf.getPageCount();i++){
+
 if(!pagesToDelete.includes(i+1)){
-keep.push(i)
+keepPages.push(i)
 }
-}
-
-const pages=await newPdf.copyPages(srcPdf,keep)
-
-pages.forEach(p=>newPdf.addPage(p))
-
-const bytes=await newPdf.save()
-
-cleanBlob=new Blob([bytes],{type:"application/pdf"})
-
-document.getElementById("successBox").style.display="block"
 
 }
 
-document.getElementById("downloadBtn").onclick=function(){
-downloadBlob(cleanBlob,"clean.pdf")
+const pages = await newPdf.copyPages(srcPdf, keepPages)
+
+pages.forEach(p => newPdf.addPage(p))
+
+const bytes = await newPdf.save()
+
+deleteBlob = new Blob([bytes],{type:"application/pdf"})
+
+document.getElementById("deleteSuccess").style.display = "block"
+
+}
+
+document.getElementById("deleteDownload").onclick = function(){
+
+const url = URL.createObjectURL(deleteBlob)
+
+const a = document.createElement("a")
+
+a.href = url
+a.download = "clean.pdf"
+
+a.click()
+
+URL.revokeObjectURL(url)
+
 }

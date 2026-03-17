@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Delete Pages</title>
+
+<link rel="stylesheet" href="../../ui.css">
+
+<script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+</head>
+
+<body>
+
+<header>Delete Pages</header>
+
+<div class="container">
+
+<a href="../../index.html">
+<button class="back">← Back</button>
+</a>
+
+<div class="panel">
+
+<div id="uploadZone" class="upload-zone">
+Upload PDF
+<input type="file" id="fileInput" accept="application/pdf" hidden>
+</div>
+
+<div id="pageGrid" class="page-grid"></div>
+
+<button onclick="deletePages()">Create Clean PDF</button>
+
+<div id="successBox" class="success">
+✔ Pages removed
+<button id="downloadBtn">Download</button>
+</div>
+
+</div>
+
+</div>
+
+<script src="../../ui.js"></script>
+<script src="delete-page-pdf.js"></script>
+
+</body>
+</html>

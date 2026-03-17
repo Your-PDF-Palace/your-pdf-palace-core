@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<title>Delete Pages</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Delete Pages PDF</title>
 
 <link rel="stylesheet" href="../../ui.css">
+<link rel="stylesheet" href="delete-page-pdf.css">
 
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -13,28 +18,28 @@
 
 <body>
 
-<header>Delete Pages</header>
+<header>Delete PDF Pages</header>
 
 <div class="container">
 
-<a href="../../index.html">
-<button class="back">← Back</button>
-</a>
-
 <div class="panel">
 
-<div id="uploadZone" class="upload-zone">
-Upload PDF
-<input type="file" id="fileInput" accept="application/pdf" hidden>
+<button class="back" onclick="goHome()">← Back</button>
+
+<h2>Select pages to delete</h2>
+
+<div id="deleteUpload" class="upload-zone">
+Upload a PDF
+<input type="file" id="deleteInput" accept="application/pdf" hidden>
 </div>
 
-<div id="pageGrid" class="page-grid"></div>
+<div id="deleteGrid" class="page-grid"></div>
 
 <button onclick="deletePages()">Create Clean PDF</button>
 
-<div id="successBox" class="success">
-✔ Pages removed
-<button id="downloadBtn">Download</button>
+<div id="deleteSuccess" class="success">
+✔ Pages removed successfully
+<button id="deleteDownload">Download</button>
 </div>
 
 </div>

@@ -1,96 +1,102 @@
-const uploadZone=document.getElementById("uploadZone")
-const fileInput=document.getElementById("fileInput")
-const fileList=document.getElementById("fileList")
+const uploadZone = document.getElementById("uploadZone")
+const fileInput = document.getElementById("fileInput")
+const fileList = document.getElementById("fileList")
 
-let files=[]
-let mergedBlob=null
+let files = []
+let mergedBlob = null
 
-uploadZone.onclick=()=>fileInput.click()
+uploadZone.onclick = () => fileInput.click()
 
-fileInput.addEventListener("change",e=>{
-addFiles(e.target.files)
+fileInput.addEventListener("change", e=>{
+ addFiles(e.target.files)
 })
 
-uploadZone.addEventListener("dragover",e=>{
-e.preventDefault()
-uploadZone.classList.add("drag")
+uploadZone.addEventListener("dragover", e=>{
+ e.preventDefault()
+ uploadZone.classList.add("drag")
 })
 
-uploadZone.addEventListener("dragleave",()=>{
-uploadZone.classList.remove("drag")
+uploadZone.addEventListener("dragleave", ()=>{
+ uploadZone.classList.remove("drag")
 })
 
-uploadZone.addEventListener("drop",e=>{
-e.preventDefault()
-uploadZone.classList.remove("drag")
-addFiles(e.dataTransfer.files)
+uploadZone.addEventListener("drop", e=>{
+ e.preventDefault()
+ uploadZone.classList.remove("drag")
+ addFiles(e.dataTransfer.files)
 })
 
 function addFiles(newFiles){
-
-for(const f of newFiles){
-files.push(f)
-}
-
-renderFiles()
-
+ for(const f of newFiles){
+  files.push(f)
+ }
+ renderFiles()
 }
 
 function renderFiles(){
 
-fileList.innerHTML=""
+ fileList.innerHTML=""
 
-files.forEach((file,index)=>{
+ files.forEach((file,index)=>{
 
-const div=document.createElement("div")
-div.className="file-item"
+  const div=document.createElement("div")
+  div.className="file-item"
 
-const info=document.createElement("div")
-info.textContent=file.name
+  const info=document.createElement("div")
+  info.className="file-info"
+  info.textContent=file.name
 
-const remove=document.createElement("button")
-remove.textContent="❌"
-remove.className="remove"
+  const remove=document.createElement("button")
+  remove.textContent="❌"
+  remove.className="remove"
 
-remove.onclick=()=>{
-files.splice(index,1)
-renderFiles()
-}
+  remove.onclick=()=>{
+   files.splice(index,1)
+   renderFiles()
+  }
 
-div.appendChild(info)
-div.appendChild(remove)
+  div.appendChild(info)
+  div.appendChild(remove)
 
-fileList.appendChild(div)
-
-})
+  fileList.appendChild(div)
+ })
 
 }
 
 async function mergePDFs(){
 
-const {PDFDocument}=PDFLib
+ const {PDFDocument} = PDFLib
+ const merged = await PDFDocument.create()
 
-const merged=await PDFDocument.create()
+ for(let f of files){
 
-for(const file of files){
+  const bytes = await f.arrayBuffer()
+  const pdf = await PDFDocument.load(bytes)
 
-const bytes=await file.arrayBuffer()
-const pdf=await PDFDocument.load(bytes)
+  const pages = await merged.copyPages(pdf,pdf.getPageIndices())
 
-const pages=await merged.copyPages(pdf,pdf.getPageIndices())
+  pages.forEach(p=>merged.addPage(p))
 
-pages.forEach(p=>merged.addPage(p))
+ }
+
+ const mergedBytes = await merged.save()
+
+ mergedBlob = new Blob([mergedBytes],{type:"application/pdf"})
+
+ document.getElementById("successBox").style.display="block"
 
 }
 
-const mergedBytes=await merged.save()
+document.getElementById("downloadBtn").onclick = function(){
 
-mergedBlob=new Blob([mergedBytes],{type:"application/pdf"})
+ const url = URL.createObjectURL(mergedBlob)
 
-document.getElementById("successBox").style.display="block"
+ const a = document.createElement("a")
 
-}
+ a.href = url
+ a.download="merged.pdf"
+ a.click()
 
-document.getElementById("downloadBtn").onclick=function(){
-downloadBlob(mergedBlob,"merged.pdf")
+ URL.revokeObjectURL(url)
+
 }

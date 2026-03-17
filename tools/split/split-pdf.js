@@ -10,11 +10,18 @@ splitUpload.onclick = () => splitInput.click()
 
 splitInput.addEventListener("change", async e => {
 
-splitFile = e.target.files[0]
+splitInput.addEventListener("change", async e => {
 
-if(!splitFile){
+const file = e.target.files[0]
+
+if(!file) return
+
+if(file.type !== "application/pdf"){
+alert("Please upload a valid PDF file")
 return
 }
+
+splitFile = file
 
 renderSplitPreview()
 

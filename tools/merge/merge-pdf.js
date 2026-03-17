@@ -27,10 +27,14 @@ uploadZone.addEventListener("drop", e=>{
 })
 
 function addFiles(newFiles){
- for(const f of newFiles){
-  files.push(f)
- }
- renderFiles()
+for(const f of newFiles){
+if(f.type !== "application/pdf"){
+alert("Only PDF files are allowed")
+continue
+}
+files.push(f)
+}
+renderFiles()
 }
 
 function renderFiles(){

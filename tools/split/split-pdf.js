@@ -1,50 +1,63 @@
-const uploadZone=document.getElementById("uploadZone")
-const fileInput=document.getElementById("fileInput")
-const pageGrid=document.getElementById("pageGrid")
+const splitUpload = document.getElementById("splitUpload")
+const splitInput = document.getElementById("splitInput")
+const pageGrid = document.getElementById("pageGrid")
 
-let file=null
-let selectedPages=[]
-let splitBlob=null
+let splitFile = null
+let selectedPages = []
+let splitBlob = null
 
-uploadZone.onclick=()=>fileInput.click()
+splitUpload.onclick = () => splitInput.click()
 
-fileInput.addEventListener("change",async e=>{
-file=e.target.files[0]
-renderPreview()
+splitInput.addEventListener("change", async e => {
+
+splitFile = e.target.files[0]
+
+if(!splitFile){
+return
+}
+
+renderSplitPreview()
+
 })
 
-async function renderPreview(){
+async function renderSplitPreview(){
 
-pageGrid.innerHTML=""
-selectedPages=[]
+pageGrid.innerHTML = ""
+selectedPages = []
 
-const buffer=await file.arrayBuffer()
-const pdf=await pdfjsLib.getDocument({data:buffer}).promise
+const buffer = await splitFile.arrayBuffer()
+const pdf = await pdfjsLib.getDocument({data:buffer}).promise
 
 for(let i=1;i<=pdf.numPages;i++){
 
-const page=await pdf.getPage(i)
-const viewport=page.getViewport({scale:0.5})
+const page = await pdf.getPage(i)
 
-const canvas=document.createElement("canvas")
-canvas.width=viewport.width
-canvas.height=viewport.height
+const viewport = page.getViewport({scale:0.5})
 
-const ctx=canvas.getContext("2d")
+const canvas = document.createElement("canvas")
 
-await page.render({canvasContext:ctx,viewport}).promise
+canvas.width = viewport.width
+canvas.height = viewport.height
 
-const div=document.createElement("div")
-div.className="page"
+const ctx = canvas.getContext("2d")
+
+await page.render({
+canvasContext:ctx,
+viewport
+}).promise
+
+const div = document.createElement("div")
+
+div.className = "page"
 
 div.appendChild(canvas)
 
-div.onclick=()=>{
+div.onclick = () => {
 
 div.classList.toggle("selected")
 
 if(selectedPages.includes(i)){
-selectedPages=selectedPages.filter(p=>p!==i)
+selectedPages = selectedPages.filter(p => p !== i)
 }else{
 selectedPages.push(i)
 }
@@ -59,25 +72,45 @@ pageGrid.appendChild(div)
 
 async function splitPDF(){
 
-const {PDFDocument}=PDFLib
+if(selectedPages.length === 0){
+alert("Select pages to extract")
+return
+}
 
-const srcBytes=await file.arrayBuffer()
-const srcPdf=await PDFDocument.load(srcBytes)
+const {PDFDocument} = PDFLib
 
-const newPdf=await PDFDocument.create()
+const srcBytes = await splitFile.arrayBuffer()
 
-const pages=await newPdf.copyPages(srcPdf,selectedPages.map(p=>p-1))
+const srcPdf = await PDFDocument.load(srcBytes)
 
-pages.forEach(p=>newPdf.addPage(p))
+const newPdf = await PDFDocument.create()
 
-const bytes=await newPdf.save()
+const pages = await newPdf.copyPages(
+srcPdf,
+selectedPages.map(p => p - 1)
+)
 
-splitBlob=new Blob([bytes],{type:"application/pdf"})
+pages.forEach(p => newPdf.addPage(p))
 
-document.getElementById("successBox").style.display="block"
+const bytes = await newPdf.save()
+
+splitBlob = new Blob([bytes],{type:"application/pdf"})
+
+document.getElementById("splitSuccess").style.display = "block"
 
 }
 
-document.getElementById("downloadBtn").onclick=function(){
-downloadBlob(splitBlob,"split.pdf")
+document.getElementById("splitDownload").onclick = function(){
+
+const url = URL.createObjectURL(splitBlob)
+
+const a = document.createElement("a")
+
+a.href = url
+a.download = "split.pdf"
+
+a.click()
+
+URL.revokeObjectURL(url)
+
 }

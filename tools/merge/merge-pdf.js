@@ -1,11 +1,13 @@
 const MAX_FILE_SIZE = 50 * 1024 * 1024
 const MAX_TOTAL_SIZE = 150 * 1024 * 1024
+
 const uploadZone = document.getElementById("uploadZone")
 const fileInput = document.getElementById("fileInput")
 const fileList = document.getElementById("fileList")
 
 let files = []
 let mergedBlob = null
+let dragIndex = null
 
 uploadZone.onclick = () => fileInput.click()
 
@@ -60,68 +62,93 @@ renderFiles()
 
 function renderFiles(){
 
- fileList.innerHTML=""
+fileList.innerHTML=""
 
- files.forEach((file,index)=>{
+files.forEach((file,index)=>{
 
-  const div=document.createElement("div")
-  div.className="file-item"
+const div=document.createElement("div")
+div.className="file-item"
+div.draggable=true
 
-  const info=document.createElement("div")
-  info.className="file-info"
-  info.textContent=file.name
+div.addEventListener("dragstart",()=>{
+dragIndex=index
+})
 
-  const remove=document.createElement("button")
-  remove.textContent="❌"
-  remove.className="remove"
+div.addEventListener("dragover",(e)=>{
+e.preventDefault()
+})
 
-  remove.onclick=()=>{
-   files.splice(index,1)
-   renderFiles()
-  }
+div.addEventListener("drop",()=>{
 
-  div.appendChild(info)
-  div.appendChild(remove)
+const dragged=files[dragIndex]
 
-  fileList.appendChild(div)
- })
+files.splice(dragIndex,1)
+files.splice(index,0,dragged)
+
+renderFiles()
+
+})
+
+const info=document.createElement("div")
+info.className="file-info"
+info.textContent=file.name
+
+const remove=document.createElement("button")
+remove.textContent="❌"
+remove.className="remove"
+
+remove.onclick=()=>{
+files.splice(index,1)
+renderFiles()
+}
+
+div.appendChild(info)
+div.appendChild(remove)
+
+fileList.appendChild(div)
+
+})
 
 }
 
 async function mergePDFs(){
 
- const {PDFDocument} = PDFLib
- const merged = await PDFDocument.create()
+if(files.length < 2){
+alert("Upload at least 2 PDFs")
+return
+}
 
- for(let f of files){
+const {PDFDocument} = PDFLib
+const merged = await PDFDocument.create()
 
-  const bytes = await f.arrayBuffer()
-  const pdf = await PDFDocument.load(bytes)
+for(let f of files){
 
-  const pages = await merged.copyPages(pdf,pdf.getPageIndices())
+const bytes = await f.arrayBuffer()
+const pdf = await PDFDocument.load(bytes)
 
-  pages.forEach(p=>merged.addPage(p))
+const pages = await merged.copyPages(pdf,pdf.getPageIndices())
 
- }
-
- const mergedBytes = await merged.save()
-
- mergedBlob = new Blob([mergedBytes],{type:"application/pdf"})
-
- document.getElementById("successBox").style.display="block"
+pages.forEach(p=>merged.addPage(p))
 
 }
 
-document.getElementById("downloadBtn").onclick = function(){
+const mergedBytes = await merged.save()
 
- const url = URL.createObjectURL(mergedBlob)
+mergedBlob = new Blob([mergedBytes],{type:"application/pdf"})
 
- const a = document.createElement("a")
+document.getElementById("successBox").style.display="block"
 
- a.href = url
- a.download="merged.pdf"
- a.click()
+}
 
- URL.revokeObjectURL(url)
+document.getElementById("downloadBtn").onclick=function(){
+
+const url = URL.createObjectURL(mergedBlob)
+
+const a=document.createElement("a")
+a.href=url
+a.download="merged.pdf"
+a.click()
+
+URL.revokeObjectURL(url)
 
 }

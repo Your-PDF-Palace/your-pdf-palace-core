@@ -10,11 +10,16 @@ deleteUpload.onclick = () => deleteInput.click()
 
 deleteInput.addEventListener("change", async e => {
 
-deleteFile = e.target.files[0]
+const file = e.target.files[0]
 
-if(!deleteFile){
+if(!file) return
+
+if(file.type !== "application/pdf"){
+alert("Please upload a valid PDF file")
 return
 }
+
+deleteFile = file
 
 renderDeletePreview()
 

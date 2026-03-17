@@ -1,3 +1,5 @@
+const MAX_FILE_SIZE = 50 * 1024 * 1024
+const MAX_TOTAL_SIZE = 150 * 1024 * 1024
 const uploadZone = document.getElementById("uploadZone")
 const fileInput = document.getElementById("fileInput")
 const fileList = document.getElementById("fileList")

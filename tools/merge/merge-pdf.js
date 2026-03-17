@@ -30,6 +30,8 @@ uploadZone.addEventListener("drop", e=>{
 
 function addFiles(newFiles){
 
+let currentTotal = files.reduce((sum,f)=>sum+f.size,0)
+
 for(const f of newFiles){
 
 if(f.type !== "application/pdf"){
@@ -37,7 +39,18 @@ alert("Only PDF files are allowed")
 continue
 }
 
+if(f.size > MAX_FILE_SIZE){
+alert(f.name + " exceeds the 50MB file limit")
+continue
+}
+
+if(currentTotal + f.size > MAX_TOTAL_SIZE){
+alert("Total upload limit is 150MB")
+break
+}
+
 files.push(f)
+currentTotal += f.size
 
 }
 

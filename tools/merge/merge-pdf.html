@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Merge PDF</title>
 
 <link rel="stylesheet" href="../../ui.css">
@@ -18,23 +22,21 @@
 
 <div class="container">
 
-<a href="index.html">
-<button class="back">← Back</button>
-</a>
-
 <div class="panel">
+
+<button class="back" onclick="goHome()">← Back</button>
 
 <div id="uploadZone" class="upload-zone">
 Drop PDFs here or click to upload
 <input type="file" id="fileInput" multiple accept="application/pdf" hidden>
 </div>
 
-<div id="fileList"></div>
+<div id="fileList" class="file-list"></div>
 
 <button onclick="mergePDFs()">Merge</button>
 
 <div id="successBox" class="success">
-✔ Files merged
+Files merged successfully
 <button id="downloadBtn">Download</button>
 </div>
 
@@ -42,7 +44,7 @@ Drop PDFs here or click to upload
 
 </div>
 
-<script src="ui.js"></script>
+<script src="../../ui.js"></script>
 <script src="merge-pdf.js"></script>
 
 </body>

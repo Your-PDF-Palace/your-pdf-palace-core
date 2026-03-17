@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Split PDF</title>
 
-<link rel="stylesheet" href="ui.css">
+<link rel="stylesheet" href="../../ui.css">
 <link rel="stylesheet" href="split-pdf.css">
 
 <script src="https://unpkg.com/pdf-lib/dist/pdf-lib.min.js"></script>
@@ -18,31 +22,31 @@
 
 <div class="container">
 
-<a href="index.html">
-<button class="back">← Back</button>
-</a>
-
 <div class="panel">
 
-<div id="uploadZone" class="upload-zone">
-Upload PDF
-<input type="file" id="fileInput" accept="application/pdf" hidden>
+<button class="back" onclick="goHome()">← Back</button>
+
+<h2>Select pages to extract</h2>
+
+<div id="splitUpload" class="upload-zone">
+Upload a PDF
+<input type="file" id="splitInput" accept="application/pdf" hidden>
 </div>
 
 <div id="pageGrid" class="page-grid"></div>
 
-<button onclick="splitPDF()">Create PDF</button>
+<button onclick="splitPDF()">Create Split PDF</button>
 
-<div id="successBox" class="success">
-✔ PDF created
-<button id="downloadBtn">Download</button>
+<div id="splitSuccess" class="success">
+✔ PDF created successfully
+<button id="splitDownload">Download</button>
 </div>
 
 </div>
 
 </div>
 
-<script src="ui.js"></script>
+<script src="../../ui.js"></script>
 <script src="split-pdf.js"></script>
 
 </body>

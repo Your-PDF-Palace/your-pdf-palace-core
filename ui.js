@@ -1,10 +1,16 @@
-console.log("YOURPDFPALACE Loaded");
-formatFileSize()
+function formatSize(bytes){
+return (bytes/1024/1024).toFixed(2)+" MB"
+}
 
-createDownload()
+function downloadBlob(blob,filename){
 
-renderPDFThumbnail()
+const url=URL.createObjectURL(blob)
 
-showSuccess()
+const a=document.createElement("a")
+a.href=url
+a.download=filename
+a.click()
 
-progressBar()
+URL.revokeObjectURL(url)
+
+}

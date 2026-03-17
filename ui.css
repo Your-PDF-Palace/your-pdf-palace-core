@@ -45,7 +45,7 @@ box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
 button{
-padding:10px;
+padding:14px;
 margin-top:10px;
 width:100%;
 background:black;
@@ -53,6 +53,7 @@ color:white;
 border:none;
 border-radius:8px;
 cursor:pointer;
+font-size:16px
 }
 
 .back{
@@ -64,11 +65,15 @@ color:black;
 .upload-zone{
 border:2px dashed #bbb;
 padding:40px;
+min-height:120px;
+display:flex;
+align-items:center;
+justify-content:center;
 text-align:center;
 border-radius:12px;
 background:#fafafa;
 margin-bottom:20px;
-cursor:pointer;
+font-size:16px
 }
 
 .upload-zone.drag{
@@ -78,7 +83,7 @@ background:#f0f0f0;
 
 .page-grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(100px,1fr));
 gap:10px;
 margin-top:20px;
 max-height:500px;
@@ -112,4 +117,9 @@ background:#e8f7e8;
 border:1px solid #4caf50;
 border-radius:8px;
 display:none;
+}
+
+button:active,
+.tool:active{
+transform:scale(0.97);
 }
